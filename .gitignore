@@ -14,3 +14,8 @@ out/
 .classpath
 .attach*
 src/test/resources/application-test.yml
+
+.env
+.env.secrets
+.env_encoded
+sample-flows/
