@@ -23,7 +23,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Schema(
     title = "List tasks from Todoist",
-    description = "Retrieves a list of tasks from Todoist with optional filters"
+    description = "Retrieves a list of tasks from Todoist with optional project filter"
 )
 @Plugin(
     examples = {
@@ -49,30 +49,22 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
         description = "Filter tasks by project ID"
     )
     private Property<String> projectId;
-    
-    @Schema(
-        title = "Filter",
-        description = "Filter tasks by any supported filter (e.g., 'today', 'overdue', 'priority 1')"
-    )
-    private Property<String> filter;
 
     @Override
     public Output run(RunContext runContext) throws Exception {
         Logger logger = runContext.logger();
         
-        String token = runContext.render(apiToken).as(String.class).orElseThrow();
+        String rToken = runContext.render(apiToken).as(String.class).orElseThrow();
         
-        StringBuilder urlBuilder = new StringBuilder(BASE_URL + "/tasks?");
+        StringBuilder urlBuilder = new StringBuilder(BASE_URL + "/tasks");
         
-        runContext.render(projectId).as(String.class).ifPresent(p -> urlBuilder.append("project_id=").append(p).append("&"));
-        runContext.render(filter).as(String.class).ifPresent(f -> urlBuilder.append("filter=").append(f).append("&"));
+        runContext.render(projectId).as(String.class).ifPresent(p -> {
+            urlBuilder.append("?project_id=").append(p);
+        });
         
         String url = urlBuilder.toString();
-        if (url.endsWith("&")) {
-            url = url.substring(0, url.length() - 1);
-        }
         
-        HttpRequest request = createRequestBuilder(token, url)
+        HttpRequest request = createRequestBuilder(rToken, url)
             .method("GET")
             .build();
         

@@ -23,41 +23,48 @@ import java.util.Map;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Create a new task in Todoist",
-    description = "Creates a new task in Todoist with the specified content and optional parameters"
+    title = "Update an existing task in Todoist",
+    description = "Updates an existing task in Todoist with new values"
 )
 @Plugin(
     examples = {
         @Example(
-            title = "Create a simple task",
+            title = "Update task content",
             code = {
                 "apiToken: \"{{ secret('TODOIST_API_TOKEN') }}\"",
-                "content: \"Review pull requests\""
+                "taskId: \"7498765432\"",
+                "content: \"Updated task title\""
             }
         ),
         @Example(
-            title = "Create a task with description and priority",
+            title = "Update task priority and due date",
             code = {
                 "apiToken: \"{{ secret('TODOIST_API_TOKEN') }}\"",
-                "content: \"Deploy to production\"",
-                "taskDescription: \"Deploy version 2.0 after testing\"",
-                "priority: 4"
+                "taskId: \"7498765432\"",
+                "priority: 4",
+                "dueString: \"tomorrow\""
             }
         )
     }
 )
-public class CreateTask extends AbstractTodoistTask implements RunnableTask<CreateTask.Output> {
+public class UpdateTask extends AbstractTodoistTask implements RunnableTask<UpdateTask.Output> {
+    
+    @Schema(
+        title = "Task ID",
+        description = "The ID of the task to update"
+    )
+    @NotNull
+    private Property<String> taskId;
     
     @Schema(
         title = "Task content",
-        description = "The content/title of the task"
+        description = "The new content/title of the task"
     )
-    @NotNull
     private Property<String> content;
     
     @Schema(
         title = "Task description",
-        description = "A description for the task"
+        description = "The new description for the task"
     )
     private Property<String> taskDescription;
     
@@ -66,12 +73,6 @@ public class CreateTask extends AbstractTodoistTask implements RunnableTask<Crea
         description = "Task priority from 1 (normal) to 4 (urgent)"
     )
     private Property<Integer> priority;
-    
-    @Schema(
-        title = "Project ID",
-        description = "The ID of the project to add the task to"
-    )
-    private Property<String> projectId;
     
     @Schema(
         title = "Due string",
@@ -84,19 +85,22 @@ public class CreateTask extends AbstractTodoistTask implements RunnableTask<Crea
         Logger logger = runContext.logger();
         
         String rToken = runContext.render(apiToken).as(String.class).orElseThrow();
-        String rTaskContent = runContext.render(content).as(String.class).orElseThrow();
+        String rTaskId = runContext.render(taskId).as(String.class).orElseThrow();
         
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("content", rTaskContent);
         
+        runContext.render(content).as(String.class).ifPresent(c -> requestBody.put("content", c));
         runContext.render(taskDescription).as(String.class).ifPresent(d -> requestBody.put("description", d));
         runContext.render(priority).as(Integer.class).ifPresent(p -> requestBody.put("priority", p));
-        runContext.render(projectId).as(String.class).ifPresent(p -> requestBody.put("project_id", p));
         runContext.render(dueString).as(String.class).ifPresent(d -> requestBody.put("due_string", d));
+        
+        if (requestBody.isEmpty()) {
+            throw new IllegalArgumentException("At least one field must be provided to update");
+        }
         
         String jsonBody = JacksonMapper.ofJson().writeValueAsString(requestBody);
         
-        HttpRequest request = createRequestBuilder(rToken, BASE_URL + "/tasks")
+        HttpRequest request = createRequestBuilder(rToken, BASE_URL + "/tasks/" + rTaskId)
             .method("POST")
             .body(HttpRequest.StringRequestBody.builder().content(jsonBody).build())
             .build();
@@ -104,10 +108,10 @@ public class CreateTask extends AbstractTodoistTask implements RunnableTask<Crea
         HttpResponse<String> response = sendRequest(runContext, request);
         
         if (response.getStatus().getCode() >= 400) {
-            throw new Exception("Failed to create task: " + response.getStatus().getCode() + " - " + response.getBody());
+            throw new Exception("Failed to update task: " + response.getStatus().getCode() + " - " + response.getBody());
         }
         
-        logger.info("Task created successfully");
+        logger.info("Task {} updated successfully", rTaskId);
         
         @SuppressWarnings("unchecked")
         Map<String, Object> result = JacksonMapper.ofJson().readValue(response.getBody(), Map.class);
@@ -124,13 +128,13 @@ public class CreateTask extends AbstractTodoistTask implements RunnableTask<Crea
     public static class Output implements io.kestra.core.models.tasks.Output {
         @Schema(
             title = "Task ID",
-            description = "The ID of the created task"
+            description = "The ID of the updated task"
         )
         private final String taskId;
         
         @Schema(
             title = "Task content",
-            description = "The content of the created task"
+            description = "The updated content of the task"
         )
         private final String content;
         

@@ -36,26 +36,4 @@ class ListTasksTest {
         assertThat(output.getCount(), notNullValue());
         assertThat(output.getCount(), greaterThanOrEqualTo(0));
     }
-
-    @Test
-    void testListTasksWithFilter() throws Exception {
-        String apiToken = System.getenv("TODOIST_API_TOKEN");
-        
-        if (apiToken == null || apiToken.isEmpty()) {
-            System.out.println("Skipping test: TODOIST_API_TOKEN not set");
-            return;
-        }
-
-        RunContext runContext = runContextFactory.of();
-
-        ListTasks task = ListTasks.builder()
-            .apiToken(Property.of(apiToken))
-            .filter(Property.of("today"))
-            .build();
-
-        ListTasks.Output output = task.run(runContext);
-
-        assertThat(output.getTasks(), notNullValue());
-        assertThat(output.getCount(), notNullValue());
-    }
 }

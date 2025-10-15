@@ -47,10 +47,10 @@ public class CompleteTask extends AbstractTodoistTask implements RunnableTask<Vo
     public VoidOutput run(RunContext runContext) throws Exception {
         Logger logger = runContext.logger();
         
-        String token = runContext.render(apiToken).as(String.class).orElseThrow();
-        String id = runContext.render(taskId).as(String.class).orElseThrow();
+        String rToken = runContext.render(apiToken).as(String.class).orElseThrow();
+        String rTaskId = runContext.render(taskId).as(String.class).orElseThrow();
         
-        HttpRequest request = createRequestBuilder(token, BASE_URL + "/tasks/" + id + "/close")
+        HttpRequest request = createRequestBuilder(rToken, BASE_URL + "/tasks/" + rTaskId + "/close")
             .method("POST")
             .body(HttpRequest.StringRequestBody.builder().content("").build())
             .build();
@@ -61,7 +61,7 @@ public class CompleteTask extends AbstractTodoistTask implements RunnableTask<Vo
             throw new Exception("Failed to complete task: " + response.getStatus().getCode() + " - " + response.getBody());
         }
         
-        logger.info("Task {} completed successfully", id);
+        logger.info("Task {} completed successfully", rTaskId);
         
         return null;
     }
