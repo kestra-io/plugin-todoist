@@ -70,11 +70,27 @@ Marks a task as completed.
 
 ## Getting Started
 
-### Get Your API Token
+### Prerequisites
 
-1. Go to https://todoist.com/app/settings/integrations/developer
-2. Copy your API token
-3. Store it as a Kestra secret (see setup instructions below)
+- A Todoist account (free or premium)
+- Todoist API token
+
+### Setup Instructions
+
+1. **Get your Todoist API token:**
+
+   - Go to https://todoist.com/app/settings/integrations/developer
+   - Scroll to the "API token" section
+   - Copy your API token
+
+2. **Configure the secret in Kestra:**
+
+   - In Kestra UI, go to Namespaces
+   - Select your namespace
+   - Go to Secrets tab
+   - Add a new secret with key `TODOIST_API_TOKEN` and your token as the value
+
+   Or for local development, use environment variables (see Development section below)
 
 ## Example Workflows
 

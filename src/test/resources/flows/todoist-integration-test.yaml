@@ -1,0 +1,24 @@
+id: todoist-integration-test
+namespace: io.kestra.plugin.todoist
+
+tasks:
+  - id: create_task
+    type: io.kestra.plugin.todoist.CreateTask
+    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+    content: "Integration test task"
+    taskDescription: "Created by Kestra integration test"
+    priority: 2
+
+  - id: get_task
+    type: io.kestra.plugin.todoist.GetTask
+    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+    taskId: "{{ outputs.create_task.taskId }}"
+
+  - id: list_tasks
+    type: io.kestra.plugin.todoist.ListTasks
+    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+
+  - id: complete_task
+    type: io.kestra.plugin.todoist.CompleteTask
+    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+    taskId: "{{ outputs.create_task.taskId }}"

@@ -1,0 +1,27 @@
+id: todoist-demo
+namespace: demo.todoist
+description: Demo flow showing all Todoist plugin tasks
+
+tasks:
+  - id: create_task
+    type: io.kestra.plugin.todoist.CreateTask
+    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+    content: "Demo task from Kestra"
+    taskDescription: "This task was created by the Kestra Todoist plugin"
+    priority: 3
+    dueString: "today"
+
+  - id: get_task
+    type: io.kestra.plugin.todoist.GetTask
+    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+    taskId: "{{ outputs.create_task.taskId }}"
+
+  - id: list_tasks
+    type: io.kestra.plugin.todoist.ListTasks
+    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+    filter: "today"
+
+  - id: complete_task
+    type: io.kestra.plugin.todoist.CompleteTask
+    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+    taskId: "{{ outputs.create_task.taskId }}"

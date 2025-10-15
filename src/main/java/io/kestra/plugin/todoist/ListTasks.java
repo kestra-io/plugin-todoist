@@ -1,15 +1,16 @@
 package io.kestra.plugin.todoist;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.kestra.core.http.HttpRequest;
+import io.kestra.core.http.HttpResponse;
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.runners.RunContext;
+import io.kestra.core.serializers.JacksonMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import okhttp3.*;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -61,35 +62,35 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
         
         String token = runContext.render(apiToken).as(String.class).orElseThrow();
         
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(BASE_URL + "/tasks").newBuilder();
+        StringBuilder urlBuilder = new StringBuilder(BASE_URL + "/tasks?");
         
-        runContext.render(projectId).as(String.class).ifPresent(p -> urlBuilder.addQueryParameter("project_id", p));
-        runContext.render(filter).as(String.class).ifPresent(f -> urlBuilder.addQueryParameter("filter", f));
+        runContext.render(projectId).as(String.class).ifPresent(p -> urlBuilder.append("project_id=").append(p).append("&"));
+        runContext.render(filter).as(String.class).ifPresent(f -> urlBuilder.append("filter=").append(f).append("&"));
         
-        OkHttpClient client = createHttpClient();
-        Request request = createRequestBuilder(token)
-            .url(urlBuilder.build())
-            .get()
+        String url = urlBuilder.toString();
+        if (url.endsWith("&")) {
+            url = url.substring(0, url.length() - 1);
+        }
+        
+        HttpRequest request = createRequestBuilder(token, url)
+            .method("GET")
             .build();
         
-        try (Response response = client.newCall(request).execute()) {
-            String responseBody = response.body() != null ? response.body().string() : "";
-            
-            if (!response.isSuccessful()) {
-                throw new Exception("Failed to list tasks: " + response.code() + " - " + responseBody);
-            }
-            
-            ObjectMapper mapper = new ObjectMapper();
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> tasks = mapper.readValue(responseBody, List.class);
-            
-            logger.info("Retrieved {} tasks", tasks.size());
-            
-            return Output.builder()
-                .tasks(tasks)
-                .count(tasks.size())
-                .build();
+        HttpResponse<String> response = sendRequest(runContext, request);
+        
+        if (response.getStatus().getCode() >= 400) {
+            throw new Exception("Failed to list tasks: " + response.getStatus().getCode() + " - " + response.getBody());
         }
+        
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> tasks = JacksonMapper.ofJson().readValue(response.getBody(), List.class);
+        
+        logger.info("Retrieved {} tasks", tasks.size());
+        
+        return Output.builder()
+            .tasks(tasks)
+            .count(tasks.size())
+            .build();
     }
 
     @Builder

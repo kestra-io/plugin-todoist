@@ -42,9 +42,9 @@ class GetTaskTest {
 
         GetTask.Output output = getTask.run(runContext);
 
-        assertThat(output.getTaskId(), is(createOutput.getTaskId()));
-        assertThat(output.getContent(), is("Test task for GetTask"));
         assertThat(output.getTask(), notNullValue());
+        assertThat(output.getTask().get("id").toString(), is(createOutput.getTaskId()));
+        assertThat(output.getTask().get("content"), is("Test task for GetTask"));
 
         // Clean up - complete the task
         CompleteTask completeTask = CompleteTask.builder()

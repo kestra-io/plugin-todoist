@@ -1,15 +1,17 @@
 package io.kestra.plugin.todoist;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.kestra.core.http.HttpRequest;
+import io.kestra.core.http.HttpResponse;
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.runners.RunContext;
+import io.kestra.core.serializers.JacksonMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import okhttp3.*;
 import org.slf4j.Logger;
 
 import java.util.Map;
@@ -40,6 +42,7 @@ public class GetTask extends AbstractTodoistTask implements RunnableTask<GetTask
         title = "Task ID",
         description = "The ID of the task to retrieve"
     )
+    @NotNull
     private Property<String> taskId;
 
     @Override
@@ -49,31 +52,24 @@ public class GetTask extends AbstractTodoistTask implements RunnableTask<GetTask
         String token = runContext.render(apiToken).as(String.class).orElseThrow();
         String id = runContext.render(taskId).as(String.class).orElseThrow();
         
-        OkHttpClient client = createHttpClient();
-        Request request = createRequestBuilder(token)
-            .url(BASE_URL + "/tasks/" + id)
-            .get()
+        HttpRequest request = createRequestBuilder(token, BASE_URL + "/tasks/" + id)
+            .method("GET")
             .build();
         
-        try (Response response = client.newCall(request).execute()) {
-            String responseBody = response.body() != null ? response.body().string() : "";
-            
-            if (!response.isSuccessful()) {
-                throw new Exception("Failed to get task: " + response.code() + " - " + responseBody);
-            }
-            
-            ObjectMapper mapper = new ObjectMapper();
-            @SuppressWarnings("unchecked")
-            Map<String, Object> task = mapper.readValue(responseBody, Map.class);
-            
-            logger.info("Retrieved task: {}", task.get("content"));
-            
-            return Output.builder()
-                .task(task)
-                .taskId(task.get("id").toString())
-                .content(task.get("content").toString())
-                .build();
+        HttpResponse<String> response = sendRequest(runContext, request);
+        
+        if (response.getStatus().getCode() >= 400) {
+            throw new Exception("Failed to get task: " + response.getStatus().getCode() + " - " + response.getBody());
         }
+        
+        @SuppressWarnings("unchecked")
+        Map<String, Object> task = JacksonMapper.ofJson().readValue(response.getBody(), Map.class);
+        
+        logger.info("Retrieved task: {}", task.get("content"));
+        
+        return Output.builder()
+            .task(task)
+            .build();
     }
 
     @Builder
@@ -84,17 +80,5 @@ public class GetTask extends AbstractTodoistTask implements RunnableTask<GetTask
             description = "The complete task object from Todoist"
         )
         private final Map<String, Object> task;
-        
-        @Schema(
-            title = "Task ID",
-            description = "The ID of the task"
-        )
-        private final String taskId;
-        
-        @Schema(
-            title = "Content",
-            description = "The content/title of the task"
-        )
-        private final String content;
     }
 }
