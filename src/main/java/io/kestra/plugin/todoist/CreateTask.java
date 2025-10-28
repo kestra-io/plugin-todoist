@@ -29,20 +29,35 @@ import java.util.Map;
 @Plugin(
     examples = {
         @Example(
+            full = true,
             title = "Create a simple task",
-            code = {
-                "apiToken: \"{{ secret('TODOIST_API_TOKEN') }}\"",
-                "content: \"Review pull requests\""
-            }
+            code = """
+                id: todoist_create_task
+                namespace: company.team
+                
+                tasks:
+                  - id: create_task
+                    type: io.kestra.plugin.todoist.CreateTask
+                    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+                    content: "Review pull requests"
+                """
         ),
         @Example(
+            full = true,
             title = "Create a task with description and priority",
-            code = {
-                "apiToken: \"{{ secret('TODOIST_API_TOKEN') }}\"",
-                "content: \"Deploy to production\"",
-                "taskDescription: \"Deploy version 2.0 after testing\"",
-                "priority: 4"
-            }
+            code = """
+                id: todoist_create_urgent_task
+                namespace: company.team
+                
+                tasks:
+                  - id: create_urgent_task
+                    type: io.kestra.plugin.todoist.CreateTask
+                    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+                    content: "Deploy to production"
+                    taskDescription: "Deploy version 2.0 after testing"
+                    priority: 4
+                    dueString: "tomorrow"
+                """
         )
     }
 )
@@ -114,7 +129,6 @@ public class CreateTask extends AbstractTodoistTask implements RunnableTask<Crea
         
         return Output.builder()
             .taskId(result.get("id").toString())
-            .content(result.get("content").toString())
             .url(result.get("url").toString())
             .build();
     }
@@ -127,12 +141,6 @@ public class CreateTask extends AbstractTodoistTask implements RunnableTask<Crea
             description = "The ID of the created task"
         )
         private final String taskId;
-        
-        @Schema(
-            title = "Task content",
-            description = "The content of the created task"
-        )
-        private final String content;
         
         @Schema(
             title = "Task URL",

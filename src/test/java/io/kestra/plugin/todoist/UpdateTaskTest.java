@@ -46,7 +46,6 @@ class UpdateTaskTest {
         UpdateTask.Output updateOutput = updateTask.run(runContext);
 
         assertThat(updateOutput.getTaskId(), equalTo(taskId));
-        assertThat(updateOutput.getContent(), equalTo("Updated test task"));
         assertThat(updateOutput.getUrl(), notNullValue());
 
         // Clean up

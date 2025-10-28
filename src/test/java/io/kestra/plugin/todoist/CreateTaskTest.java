@@ -38,7 +38,6 @@ class CreateTaskTest {
         CreateTask.Output output = task.run(runContext);
 
         assertThat(output.getTaskId(), notNullValue());
-        assertThat(output.getContent(), is("Test task from Kestra"));
         assertThat(output.getUrl(), notNullValue());
     }
 }

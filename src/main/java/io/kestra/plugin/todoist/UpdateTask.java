@@ -29,21 +29,35 @@ import java.util.Map;
 @Plugin(
     examples = {
         @Example(
+            full = true,
             title = "Update task content",
-            code = {
-                "apiToken: \"{{ secret('TODOIST_API_TOKEN') }}\"",
-                "taskId: \"7498765432\"",
-                "content: \"Updated task title\""
-            }
+            code = """
+                id: todoist_update_task
+                namespace: company.team
+                
+                tasks:
+                  - id: update_task
+                    type: io.kestra.plugin.todoist.UpdateTask
+                    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+                    taskId: "7498765432"
+                    content: "Updated task title"
+                """
         ),
         @Example(
+            full = true,
             title = "Update task priority and due date",
-            code = {
-                "apiToken: \"{{ secret('TODOIST_API_TOKEN') }}\"",
-                "taskId: \"7498765432\"",
-                "priority: 4",
-                "dueString: \"tomorrow\""
-            }
+            code = """
+                id: todoist_update_task_priority
+                namespace: company.team
+                
+                tasks:
+                  - id: update_task_priority
+                    type: io.kestra.plugin.todoist.UpdateTask
+                    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+                    taskId: "7498765432"
+                    priority: 4
+                    dueString: "tomorrow"
+                """
         )
     }
 )
@@ -118,7 +132,6 @@ public class UpdateTask extends AbstractTodoistTask implements RunnableTask<Upda
         
         return Output.builder()
             .taskId(result.get("id").toString())
-            .content(result.get("content").toString())
             .url(result.get("url").toString())
             .build();
     }
@@ -131,12 +144,6 @@ public class UpdateTask extends AbstractTodoistTask implements RunnableTask<Upda
             description = "The ID of the updated task"
         )
         private final String taskId;
-        
-        @Schema(
-            title = "Task content",
-            description = "The updated content of the task"
-        )
-        private final String content;
         
         @Schema(
             title = "Task URL",

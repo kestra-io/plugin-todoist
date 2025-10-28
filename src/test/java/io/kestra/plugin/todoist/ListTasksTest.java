@@ -7,6 +7,9 @@ import io.kestra.core.junit.annotations.KestraTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -25,15 +28,42 @@ class ListTasksTest {
         }
 
         RunContext runContext = runContextFactory.of();
+        List<String> createdTaskIds = new ArrayList<>();
 
-        ListTasks task = ListTasks.builder()
-            .apiToken(Property.of(apiToken))
-            .build();
+        try {
+            ListTasks listTask = ListTasks.builder()
+                .apiToken(Property.of(apiToken))
+                .build();
+            ListTasks.Output initialOutput = listTask.run(runContext);
+            int initialCount = initialOutput.getSize().intValue();
 
-        ListTasks.Output output = task.run(runContext);
+            for (int i = 1; i <= 3; i++) {
+                CreateTask createTask = CreateTask.builder()
+                    .apiToken(Property.of(apiToken))
+                    .content(Property.of("Test task " + i))
+                    .build();
+                CreateTask.Output createOutput = createTask.run(runContext);
+                createdTaskIds.add(createOutput.getTaskId());
+            }
 
-        assertThat(output.getTasks(), notNullValue());
-        assertThat(output.getCount(), notNullValue());
-        assertThat(output.getCount(), greaterThanOrEqualTo(0));
+            ListTasks.Output output = listTask.run(runContext);
+
+            assertThat(output.getRows(), notNullValue());
+            assertThat(output.getSize(), notNullValue());
+            assertThat(output.getSize().intValue(), is(initialCount + 3));
+
+        } finally {
+            for (String taskId : createdTaskIds) {
+                try {
+                    DeleteTask deleteTask = DeleteTask.builder()
+                        .apiToken(Property.of(apiToken))
+                        .taskId(Property.of(taskId))
+                        .build();
+                    deleteTask.run(runContext);
+                } catch (Exception e) {
+                    System.err.println("Failed to delete test task " + taskId + ": " + e.getMessage());
+                }
+            }
+        }
     }
 }
