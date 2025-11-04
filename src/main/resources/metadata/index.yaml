@@ -1,0 +1,8 @@
+group: io.kestra.plugin.todoist
+name: "todoist"
+title: "Todoist"
+description: ""
+body: ""
+videos: []
+createdBy: "Kestra Core Team"
+managedBy: "Kestra Core Team"
