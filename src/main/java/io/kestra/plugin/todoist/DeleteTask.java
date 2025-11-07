@@ -26,11 +26,18 @@ import org.slf4j.Logger;
 @Plugin(
     examples = {
         @Example(
+            full = true,
             title = "Delete a task by ID",
-            code = {
-                "apiToken: \"{{ secret('TODOIST_API_TOKEN') }}\"",
-                "taskId: \"7498765432\""
-            }
+            code = """
+                id: todoist_delete_task
+                namespace: company.team
+                
+                tasks:
+                  - id: delete_task
+                    type: io.kestra.plugin.todoist.DeleteTask
+                    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+                    taskId: "7498765432"
+                """
         )
     }
 )

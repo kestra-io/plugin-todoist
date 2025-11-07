@@ -6,6 +6,7 @@ import io.kestra.core.runners.RunContextFactory;
 import io.kestra.core.junit.annotations.KestraTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -16,16 +17,9 @@ class CreateTaskTest {
     private RunContextFactory runContextFactory;
 
     @Test
+    @EnabledIf(value = "isApiTokenSet", disabledReason = "TODOIST_API_TOKEN environment variable not set")
     void testCreateTask() throws Exception {
-        // This test requires a valid Todoist API token
-        // Set TODOIST_API_TOKEN environment variable to run this test
         String apiToken = System.getenv("TODOIST_API_TOKEN");
-        
-        if (apiToken == null || apiToken.isEmpty()) {
-            System.out.println("Skipping test: TODOIST_API_TOKEN not set");
-            return;
-        }
-
         RunContext runContext = runContextFactory.of();
 
         CreateTask task = CreateTask.builder()
@@ -39,5 +33,10 @@ class CreateTaskTest {
 
         assertThat(output.getTaskId(), notNullValue());
         assertThat(output.getUrl(), notNullValue());
+    }
+
+    static boolean isApiTokenSet() {
+        String token = System.getenv("TODOIST_API_TOKEN");
+        return token != null && !token.isEmpty();
     }
 }

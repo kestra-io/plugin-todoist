@@ -28,11 +28,18 @@ import java.util.Map;
 @Plugin(
     examples = {
         @Example(
+            full = true,
             title = "Get a task by ID",
-            code = {
-                "apiToken: \"{{ secret('TODOIST_API_TOKEN') }}\"",
-                "taskId: \"7498765432\""
-            }
+            code = """
+                id: todoist_get_task
+                namespace: company.team
+                
+                tasks:
+                  - id: get_task
+                    type: io.kestra.plugin.todoist.GetTask
+                    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+                    taskId: "7498765432"
+                """
         )
     }
 )

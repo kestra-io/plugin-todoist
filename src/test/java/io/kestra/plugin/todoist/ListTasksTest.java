@@ -6,6 +6,7 @@ import io.kestra.core.runners.RunContextFactory;
 import io.kestra.core.junit.annotations.KestraTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +20,9 @@ class ListTasksTest {
     private RunContextFactory runContextFactory;
 
     @Test
+    @EnabledIf(value = "isApiTokenSet", disabledReason = "TODOIST_API_TOKEN environment variable not set")
     void testListTasks() throws Exception {
         String apiToken = System.getenv("TODOIST_API_TOKEN");
-        
-        if (apiToken == null || apiToken.isEmpty()) {
-            System.out.println("Skipping test: TODOIST_API_TOKEN not set");
-            return;
-        }
-
         RunContext runContext = runContextFactory.of();
         List<String> createdTaskIds = new ArrayList<>();
 
@@ -65,5 +61,10 @@ class ListTasksTest {
                 }
             }
         }
+    }
+
+    static boolean isApiTokenSet() {
+        String token = System.getenv("TODOIST_API_TOKEN");
+        return token != null && !token.isEmpty();
     }
 }
