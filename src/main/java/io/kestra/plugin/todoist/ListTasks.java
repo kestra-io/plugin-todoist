@@ -39,7 +39,7 @@ import java.util.Map;
             code = """
                 id: todoist_list_tasks
                 namespace: company.team
-                
+
                 tasks:
                   - id: list_tasks
                     type: io.kestra.plugin.todoist.ListTasks
@@ -52,7 +52,7 @@ import java.util.Map;
             code = """
                 id: todoist_list_project_tasks
                 namespace: company.team
-                
+
                 tasks:
                   - id: list_project_tasks
                     type: io.kestra.plugin.todoist.ListTasks
@@ -67,7 +67,7 @@ import java.util.Map;
             code = """
                 id: todoist_store_tasks
                 namespace: company.team
-                
+
                 tasks:
                   - id: store_tasks
                     type: io.kestra.plugin.todoist.ListTasks
@@ -78,7 +78,7 @@ import java.util.Map;
     }
 )
 public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListTasks.Output> {
-    
+
     @Schema(
         title = "Project ID",
         description = "Filter tasks by project ID"
@@ -90,40 +90,40 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
         description = "The way to fetch data: FETCH_ONE (first task only), FETCH (all tasks in memory), or STORE (store in internal storage for large datasets)"
     )
     @Builder.Default
-    private Property<FetchType> fetchType = Property.of(FetchType.FETCH);
+    private Property<FetchType> fetchType = Property.ofValue(FetchType.FETCH);
 
     @Override
     public Output run(RunContext runContext) throws Exception {
         Logger logger = runContext.logger();
-        
+
         String rToken = runContext.render(apiToken).as(String.class).orElseThrow();
-        
+
         StringBuilder urlBuilder = new StringBuilder(BASE_URL + "/tasks");
-        
+
         runContext.render(projectId).as(String.class).ifPresent(p -> {
             urlBuilder.append("?project_id=").append(p);
         });
-        
+
         String url = urlBuilder.toString();
-        
+
         HttpRequest request = createRequestBuilder(rToken, url)
             .method("GET")
             .build();
-        
+
         HttpResponse<String> response = sendRequest(runContext, request);
-        
+
         if (response.getStatus().getCode() >= 400) {
             throw new Exception("Failed to list tasks: " + response.getStatus().getCode() + " - " + response.getBody());
         }
-        
+
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> tasks = JacksonMapper.ofJson().readValue(response.getBody(), List.class);
-        
+
         logger.info("Retrieved {} tasks", tasks.size());
-        
+
         FetchType renderedFetchType = runContext.render(fetchType).as(FetchType.class).orElse(FetchType.FETCH);
         Output.OutputBuilder outputBuilder = Output.builder();
-        
+
         switch (renderedFetchType) {
             case FETCH_ONE -> {
                 if (!tasks.isEmpty()) {
@@ -146,7 +146,7 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
                 outputBuilder.rows(tasks).size((long) tasks.size());
             }
         }
-        
+
         return outputBuilder.build();
     }
 
@@ -158,19 +158,19 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
             description = "Single task when fetchType is FETCH_ONE"
         )
         private final Map<String, Object> row;
-        
+
         @Schema(
             title = "Rows",
             description = "List of tasks when fetchType is FETCH"
         )
         private final List<Map<String, Object>> rows;
-        
+
         @Schema(
             title = "URI",
             description = "URI of the stored file when fetchType is STORE"
         )
         private final URI uri;
-        
+
         @Schema(
             title = "Size",
             description = "Number of tasks retrieved"

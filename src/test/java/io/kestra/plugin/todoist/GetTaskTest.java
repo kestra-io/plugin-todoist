@@ -23,15 +23,15 @@ class GetTaskTest {
         RunContext runContext = runContextFactory.of();
 
         CreateTask createTask = CreateTask.builder()
-            .apiToken(Property.of(apiToken))
-            .content(Property.of("Test task for GetTask"))
+            .apiToken(Property.ofValue(apiToken))
+            .content(Property.ofValue("Test task for GetTask"))
             .build();
 
         CreateTask.Output createOutput = createTask.run(runContext);
 
         GetTask getTask = GetTask.builder()
-            .apiToken(Property.of(apiToken))
-            .taskId(Property.of(createOutput.getTaskId()))
+            .apiToken(Property.ofValue(apiToken))
+            .taskId(Property.ofValue(createOutput.getTaskId()))
             .build();
 
         GetTask.Output output = getTask.run(runContext);
@@ -41,8 +41,8 @@ class GetTaskTest {
         assertThat(output.getTask().get("content"), is("Test task for GetTask"));
 
         CompleteTask completeTask = CompleteTask.builder()
-            .apiToken(Property.of(apiToken))
-            .taskId(Property.of(createOutput.getTaskId()))
+            .apiToken(Property.ofValue(apiToken))
+            .taskId(Property.ofValue(createOutput.getTaskId()))
             .build();
         completeTask.run(runContext);
     }

@@ -33,7 +33,7 @@ import java.util.Map;
             code = """
                 id: todoist_get_task
                 namespace: company.team
-                
+
                 tasks:
                   - id: get_task
                     type: io.kestra.plugin.todoist.GetTask
@@ -44,7 +44,7 @@ import java.util.Map;
     }
 )
 public class GetTask extends AbstractTodoistTask implements RunnableTask<GetTask.Output> {
-    
+
     @Schema(
         title = "Task ID",
         description = "The ID of the task to retrieve"
@@ -55,25 +55,25 @@ public class GetTask extends AbstractTodoistTask implements RunnableTask<GetTask
     @Override
     public Output run(RunContext runContext) throws Exception {
         Logger logger = runContext.logger();
-        
+
         String rToken = runContext.render(apiToken).as(String.class).orElseThrow();
         String rTaskId = runContext.render(taskId).as(String.class).orElseThrow();
-        
+
         HttpRequest request = createRequestBuilder(rToken, BASE_URL + "/tasks/" + rTaskId)
             .method("GET")
             .build();
-        
+
         HttpResponse<String> response = sendRequest(runContext, request);
-        
+
         if (response.getStatus().getCode() >= 400) {
-            throw new Exception("Failed to get task: " + response.getStatus().getCode() + " - " + response.getBody());
+            throw new IllegalArgumentException("Failed to get task: " + response.getStatus().getCode() + " - " + response.getBody());
         }
-        
+
         @SuppressWarnings("unchecked")
         Map<String, Object> task = JacksonMapper.ofJson().readValue(response.getBody(), Map.class);
-        
+
         logger.info("Task {} retrieved successfully", rTaskId);
-        
+
         return Output.builder()
             .task(task)
             .build();

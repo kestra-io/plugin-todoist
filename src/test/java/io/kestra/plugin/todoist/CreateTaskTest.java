@@ -23,10 +23,10 @@ class CreateTaskTest {
         RunContext runContext = runContextFactory.of();
 
         CreateTask task = CreateTask.builder()
-            .apiToken(Property.of(apiToken))
-            .content(Property.of("Test task from Kestra"))
-            .taskDescription(Property.of("This is a test task created by the Kestra Todoist plugin"))
-            .priority(Property.of(1))
+            .apiToken(Property.ofValue(apiToken))
+            .content(Property.ofValue("Test task from Kestra"))
+            .taskDescription(Property.ofValue("This is a test task created by the Kestra Todoist plugin"))
+            .priority(Property.ofValue(1))
             .build();
 
         CreateTask.Output output = task.run(runContext);

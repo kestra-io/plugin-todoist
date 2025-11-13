@@ -23,18 +23,18 @@ class UpdateTaskTest {
         RunContext runContext = runContextFactory.of();
 
         CreateTask createTask = CreateTask.builder()
-            .apiToken(Property.of(apiToken))
-            .content(Property.of("Test task for update"))
+            .apiToken(Property.ofValue(apiToken))
+            .content(Property.ofValue("Test task for update"))
             .build();
 
         CreateTask.Output createOutput = createTask.run(runContext);
         String taskId = createOutput.getTaskId();
 
         UpdateTask updateTask = UpdateTask.builder()
-            .apiToken(Property.of(apiToken))
-            .taskId(Property.of(taskId))
-            .content(Property.of("Updated test task"))
-            .priority(Property.of(4))
+            .apiToken(Property.ofValue(apiToken))
+            .taskId(Property.ofValue(taskId))
+            .content(Property.ofValue("Updated test task"))
+            .priority(Property.ofValue(4))
             .build();
 
         UpdateTask.Output updateOutput = updateTask.run(runContext);
@@ -43,8 +43,8 @@ class UpdateTaskTest {
         assertThat(updateOutput.getUrl(), notNullValue());
 
         DeleteTask deleteTask = DeleteTask.builder()
-            .apiToken(Property.of(apiToken))
-            .taskId(Property.of(taskId))
+            .apiToken(Property.ofValue(apiToken))
+            .taskId(Property.ofValue(taskId))
             .build();
 
         deleteTask.run(runContext);

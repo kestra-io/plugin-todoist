@@ -28,15 +28,15 @@ class ListTasksTest {
 
         try {
             ListTasks listTask = ListTasks.builder()
-                .apiToken(Property.of(apiToken))
+                .apiToken(Property.ofValue(apiToken))
                 .build();
             ListTasks.Output initialOutput = listTask.run(runContext);
             int initialCount = initialOutput.getSize().intValue();
 
             for (int i = 1; i <= 3; i++) {
                 CreateTask createTask = CreateTask.builder()
-                    .apiToken(Property.of(apiToken))
-                    .content(Property.of("Test task " + i))
+                    .apiToken(Property.ofValue(apiToken))
+                    .content(Property.ofValue("Test task " + i))
                     .build();
                 CreateTask.Output createOutput = createTask.run(runContext);
                 createdTaskIds.add(createOutput.getTaskId());
@@ -52,8 +52,8 @@ class ListTasksTest {
             for (String taskId : createdTaskIds) {
                 try {
                     DeleteTask deleteTask = DeleteTask.builder()
-                        .apiToken(Property.of(apiToken))
-                        .taskId(Property.of(taskId))
+                        .apiToken(Property.ofValue(apiToken))
+                        .taskId(Property.ofValue(taskId))
                         .build();
                     deleteTask.run(runContext);
                 } catch (Exception e) {

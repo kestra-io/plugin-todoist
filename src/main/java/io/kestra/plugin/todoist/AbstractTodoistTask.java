@@ -22,7 +22,7 @@ import java.net.URI;
 @Getter
 @NoArgsConstructor
 public abstract class AbstractTodoistTask extends Task {
-    
+
     @Schema(
         title = "Todoist API token",
         description = "Your Todoist API token for authentication. Get it from https://todoist.com/app/settings/integrations/developer"
@@ -31,14 +31,14 @@ public abstract class AbstractTodoistTask extends Task {
     protected Property<String> apiToken;
 
     protected static final String BASE_URL = "https://api.todoist.com/rest/v2";
-    
+
     protected HttpRequest.HttpRequestBuilder createRequestBuilder(String token, String url) {
         return HttpRequest.builder()
             .uri(URI.create(url))
             .addHeader("Authorization", "Bearer " + token)
             .addHeader("Content-Type", "application/json");
     }
-    
+
     protected HttpResponse<String> sendRequest(RunContext runContext, HttpRequest request) throws Exception {
         HttpClient client = HttpClient.builder()
             .runContext(runContext)

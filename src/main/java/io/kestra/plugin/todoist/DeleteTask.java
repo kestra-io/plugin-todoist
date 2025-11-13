@@ -31,7 +31,7 @@ import org.slf4j.Logger;
             code = """
                 id: todoist_delete_task
                 namespace: company.team
-                
+
                 tasks:
                   - id: delete_task
                     type: io.kestra.plugin.todoist.DeleteTask
@@ -42,7 +42,7 @@ import org.slf4j.Logger;
     }
 )
 public class DeleteTask extends AbstractTodoistTask implements RunnableTask<VoidOutput> {
-    
+
     @Schema(
         title = "Task ID",
         description = "The ID of the task to delete"
@@ -53,22 +53,22 @@ public class DeleteTask extends AbstractTodoistTask implements RunnableTask<Void
     @Override
     public VoidOutput run(RunContext runContext) throws Exception {
         Logger logger = runContext.logger();
-        
+
         String rToken = runContext.render(apiToken).as(String.class).orElseThrow();
         String rTaskId = runContext.render(taskId).as(String.class).orElseThrow();
-        
+
         HttpRequest request = createRequestBuilder(rToken, BASE_URL + "/tasks/" + rTaskId)
             .method("DELETE")
             .build();
-        
+
         HttpResponse<String> response = sendRequest(runContext, request);
-        
+
         if (response.getStatus().getCode() >= 400) {
             throw new Exception("Failed to delete task: " + response.getStatus().getCode() + " - " + response.getBody());
         }
-        
+
         logger.info("Task {} deleted successfully", rTaskId);
-        
+
         return null;
     }
 }

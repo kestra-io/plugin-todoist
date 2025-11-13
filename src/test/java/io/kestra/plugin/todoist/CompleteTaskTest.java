@@ -20,15 +20,15 @@ class CompleteTaskTest {
         RunContext runContext = runContextFactory.of();
 
         CreateTask createTask = CreateTask.builder()
-            .apiToken(Property.of(apiToken))
-            .content(Property.of("Test task for CompleteTask"))
+            .apiToken(Property.ofValue(apiToken))
+            .content(Property.ofValue("Test task for CompleteTask"))
             .build();
 
         CreateTask.Output createOutput = createTask.run(runContext);
 
         CompleteTask completeTask = CompleteTask.builder()
-            .apiToken(Property.of(apiToken))
-            .taskId(Property.of(createOutput.getTaskId()))
+            .apiToken(Property.ofValue(apiToken))
+            .taskId(Property.ofValue(createOutput.getTaskId()))
             .build();
 
         completeTask.run(runContext);
