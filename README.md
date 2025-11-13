@@ -1,86 +1,202 @@
-<p align="center">
-  <a href="https://www.kestra.io">
-    <img src="https://kestra.io/banner.png"  alt="Kestra workflow orchestrator" />
-  </a>
-</p>
+# Kestra Todoist Plugin
 
-<h1 align="center" style="border-bottom: none">
-    Event-Driven Declarative Orchestrator
-</h1>
+Integrate Todoist task management with Kestra workflows. Create, list, and complete tasks programmatically as part of your automation pipelines.
 
-<div align="center">
- <a href="https://github.com/kestra-io/kestra/releases"><img src="https://img.shields.io/github/tag-pre/kestra-io/kestra.svg?color=blueviolet" alt="Last Version" /></a>
-  <a href="https://github.com/kestra-io/kestra/blob/develop/LICENSE"><img src="https://img.shields.io/github/license/kestra-io/kestra?color=blueviolet" alt="License" /></a>
-  <a href="https://github.com/kestra-io/kestra/stargazers"><img src="https://img.shields.io/github/stars/kestra-io/kestra?color=blueviolet&logo=github" alt="Github star" /></a> <br>
-<a href="https://kestra.io"><img src="https://img.shields.io/badge/Website-kestra.io-192A4E?color=blueviolet" alt="Kestra infinitely scalable orchestration and scheduling platform"></a>
-<a href="https://kestra.io/slack"><img src="https://img.shields.io/badge/Slack-Join%20Community-blueviolet?logo=slack" alt="Slack"></a>
-</div>
+## Available Tasks
 
-<br />
+### CreateTask
 
-<p align="center">
-  <a href="https://twitter.com/kestra_io" style="margin: 0 10px;">
-        <img src="https://kestra.io/twitter.svg" alt="twitter" width="35" height="25" /></a>
-  <a href="https://www.linkedin.com/company/kestra/" style="margin: 0 10px;">
-        <img src="https://kestra.io/linkedin.svg" alt="linkedin" width="35" height="25" /></a>
-  <a href="https://www.youtube.com/@kestra-io" style="margin: 0 10px;">
-        <img src="https://kestra.io/youtube.svg" alt="youtube" width="35" height="25" /></a>
-</p>
+Creates a new task in Todoist.
 
-<br />
-<p align="center">
-    <a href="https://go.kestra.io/video/product-overview" target="_blank">
-        <img src="https://kestra.io/startvideo.png" alt="Get started in 3 minutes with Kestra" width="640px" />
-    </a>
-</p>
-<p align="center" style="color:grey;"><i>Get started with Kestra in 3 minutes.</i></p>
+**Parameters:**
 
+- `apiToken` (required): Your Todoist API token
+- `content` (required): Task title/content
+- `taskDescription` (optional): Detailed description
+- `priority` (optional): Priority level (1-4, where 4 is urgent)
+- `projectId` (optional): ID of the project to add the task to
+- `dueString` (optional): Human-readable due date (e.g., "tomorrow", "next Monday")
 
-# Kestra Plugin Template
+**Outputs:**
 
-> A template for creating Kestra plugins
+- `taskId`: ID of the created task
+- `content`: Task content
+- `url`: URL to view the task
+- `response`: Full API response
 
-This repository serves as a general template for creating a new [Kestra](https://github.com/kestra-io/kestra) plugin. It should take only a few minutes! Use this repository as a scaffold to ensure that you've set up the plugin correctly, including unit tests and CI/CD workflows.
+### ListTasks
 
-![Kestra orchestrator](https://kestra.io/video.gif)
+Retrieves a list of tasks from Todoist.
 
-## Running the project in local
+**Parameters:**
+
+- `apiToken` (required): Your Todoist API token
+- `projectId` (optional): Filter by project ID
+- `filter` (optional): Custom filter (e.g., "today", "overdue", "priority 1")
+
+**Outputs:**
+
+- `tasks`: List of task objects
+- `count`: Number of tasks retrieved
+
+### GetTask
+
+Retrieves details of a specific task.
+
+**Parameters:**
+
+- `apiToken` (required): Your Todoist API token
+- `taskId` (required): ID of the task to retrieve
+
+**Outputs:**
+
+- `task`: Complete task object
+- `taskId`: Task ID
+- `content`: Task content
+
+### CompleteTask
+
+Marks a task as completed.
+
+**Parameters:**
+
+- `apiToken` (required): Your Todoist API token
+- `taskId` (required): ID of the task to complete
+
+**Outputs:**
+
+- `taskId`: ID of the completed task
+- `success`: Boolean indicating success
+
+## Getting Started
+
 ### Prerequisites
+
+- A Todoist account (free or premium)
+- Todoist API token
+
+### Setup Instructions
+
+1. **Get your Todoist API token:**
+
+   - Go to https://todoist.com/app/settings/integrations/developer
+   - Scroll to the "API token" section
+   - Copy your API token
+
+2. **Configure the secret in Kestra:**
+
+   - In Kestra UI, go to Namespaces
+   - Select your namespace
+   - Go to Secrets tab
+   - Add a new secret with key `TODOIST_API_TOKEN` and your token as the value
+
+   Or for local development, use environment variables (see Development section below)
+
+## Example Workflows
+
+### Create a Task
+
+```yaml
+id: create-task
+namespace: demo.todoist
+
+tasks:
+  - id: create_task
+    type: io.kestra.plugin.todoist.CreateTask
+    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+    content: "Review deployment"
+    taskDescription: "Check production deployment status"
+    priority: 3
+    dueString: "today"
+```
+
+### List Today's Tasks
+
+```yaml
+id: list-tasks
+namespace: demo.todoist
+
+tasks:
+  - id: list_tasks
+    type: io.kestra.plugin.todoist.ListTasks
+    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+    filter: "today"
+```
+
+### Complete a Task
+
+```yaml
+id: complete-task
+namespace: demo.todoist
+
+tasks:
+  - id: create_task
+    type: io.kestra.plugin.todoist.CreateTask
+    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+    content: "Automated task"
+
+  - id: complete_task
+    type: io.kestra.plugin.todoist.CompleteTask
+    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+    taskId: "{{ outputs.create_task.taskId }}"
+```
+
+## Development
+
+### Prerequisites
+
 - Java 21
 - Docker
+- Todoist API token
 
-### Running tests
+### Running Tests
+
+```bash
+export TODOIST_API_TOKEN=your_token_here
+./gradlew test
 ```
-./gradlew check --parallel
+
+### Building the Plugin
+
+```bash
+./gradlew shadowJar
 ```
 
-### Development
+### Testing Locally with Kestra
 
-`VSCode`:
+1. **Setup secrets:**
 
-Follow the README.md within the `.devcontainer` folder for a quick and easy way to get up and running with developing plugins if you are using VSCode.
+   ```bash
+   # Create .env.secrets with your API token
+   echo "TODOIST_API_TOKEN=your_token_here" > .env.secrets
 
-`Other IDEs`:
+   # Encode it for Kestra
+   while IFS='=' read -r key value; do echo "SECRET_$key=$(echo -n "$value" | base64)"; done < .env.secrets > .env_encoded
+   ```
 
+2. **Build and start:**
+
+   ```bash
+   ./gradlew shadowJar
+   docker compose up -d
+   ```
+
+3. **Access Kestra:** http://localhost:8080
+
+4. **Create a flow:** Go to Flows → Create and paste an example from above
+
+5. **Making changes:** After modifying plugin code:
+   ```bash
+   ./gradlew shadowJar
+   docker compose restart
+   ```
+
+### Stopping Kestra
+
+```bash
+docker compose down
 ```
-./gradlew shadowJar && docker build -t kestra-custom . && docker run --rm -p 8080:8080 kestra-custom server local
-```
-> [!NOTE]
-> You need to relaunch this whole command everytime you make a change to your plugin
-
-go to http://localhost:8080, your plugin will be available to use
-
-## Documentation
-* Full documentation can be found under: [kestra.io/docs](https://kestra.io/docs)
-* Documentation for developing a plugin is included in the [Plugin Developer Guide](https://kestra.io/docs/plugin-developer-guide/)
-
 
 ## License
+
 Apache 2.0 © [Kestra Technologies](https://kestra.io)
-
-
-## Stay up to date
-
-We release new versions every month. Give the [main repository](https://github.com/kestra-io/kestra) a star to stay up to date with the latest releases and get notified about future updates.
-
-![Star the repo](https://kestra.io/star.gif)
