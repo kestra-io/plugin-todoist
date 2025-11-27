@@ -1,0 +1,8 @@
+group: io.kestra.plugin.todoist
+name: "todoist"
+title: "Todoist"
+description: "Interact with Todoist API to manage tasks and projects."
+body: ""
+videos: []
+createdBy: "Kestra Core Team"
+managedBy: "Kestra Core Team"
