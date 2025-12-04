@@ -1,8 +1,8 @@
 group: io.kestra.plugin.todoist
 name: "todoist"
 title: "Todoist"
-description: "Interact with Todoist API to manage tasks and projects."
-body: ""
+description: "Tasks that manage Todoist tasks through the Todoist API."
+body: "Use your Todoist API token to create, update, complete, delete, or list tasks with fields like content, due dates, labels, and project IDs, returning task payloads and URLs for further workflow steps."
 videos: []
 createdBy: "Kestra Core Team"
 managedBy: "Kestra Core Team"
