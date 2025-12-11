@@ -129,7 +129,6 @@ public class CreateTask extends AbstractTodoistTask implements RunnableTask<Crea
 
         return Output.builder()
             .taskId(result.get("id").toString())
-            .url(result.get("url").toString())
             .build();
     }
 
@@ -141,11 +140,5 @@ public class CreateTask extends AbstractTodoistTask implements RunnableTask<Crea
             description = "The ID of the created task"
         )
         private final String taskId;
-
-        @Schema(
-            title = "Task URL",
-            description = "The URL to view the task in Todoist"
-        )
-        private final String url;
     }
 }

@@ -132,7 +132,6 @@ public class UpdateTask extends AbstractTodoistTask implements RunnableTask<Upda
         
         return Output.builder()
             .taskId(result.get("id").toString())
-            .url(result.get("url").toString())
             .build();
     }
 
@@ -144,11 +143,5 @@ public class UpdateTask extends AbstractTodoistTask implements RunnableTask<Upda
             description = "The ID of the updated task"
         )
         private final String taskId;
-        
-        @Schema(
-            title = "Task URL",
-            description = "The URL to view the task in Todoist"
-        )
-        private final String url;
     }
 }

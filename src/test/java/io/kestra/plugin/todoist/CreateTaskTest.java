@@ -32,7 +32,6 @@ class CreateTaskTest {
         CreateTask.Output output = task.run(runContext);
 
         assertThat(output.getTaskId(), notNullValue());
-        assertThat(output.getUrl(), notNullValue());
     }
 
     static boolean isApiTokenSet() {

@@ -59,7 +59,6 @@ public class CompleteTask extends AbstractTodoistTask implements RunnableTask<Vo
         
         HttpRequest request = createRequestBuilder(rToken, BASE_URL + "/tasks/" + rTaskId + "/close")
             .method("POST")
-            .body(HttpRequest.StringRequestBody.builder().content("").build())
             .build();
         
         HttpResponse<String> response = sendRequest(runContext, request);

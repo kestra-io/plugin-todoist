@@ -30,7 +30,7 @@ public abstract class AbstractTodoistTask extends Task {
     @NotNull
     protected Property<String> apiToken;
 
-    protected static final String BASE_URL = "https://api.todoist.com/rest/v2";
+    protected static final String BASE_URL = "https://api.todoist.com/api/v1";
 
     protected HttpRequest.HttpRequestBuilder createRequestBuilder(String token, String url) {
         return HttpRequest.builder()

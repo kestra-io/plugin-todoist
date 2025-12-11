@@ -40,7 +40,6 @@ class UpdateTaskTest {
         UpdateTask.Output updateOutput = updateTask.run(runContext);
 
         assertThat(updateOutput.getTaskId(), equalTo(taskId));
-        assertThat(updateOutput.getUrl(), notNullValue());
 
         DeleteTask deleteTask = DeleteTask.builder()
             .apiToken(Property.ofValue(apiToken))
