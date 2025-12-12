@@ -55,7 +55,7 @@ import java.util.Map;
                     apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
                     content: "Deploy to production"
                     taskDescription: "Deploy version 2.0 after testing"
-                    priority: 4
+                    priority: 1
                     dueString: "tomorrow"
                 """
         )
@@ -78,7 +78,7 @@ public class CreateTask extends AbstractTodoistTask implements RunnableTask<Crea
 
     @Schema(
         title = "Priority",
-        description = "Task priority from 1 (normal) to 4 (urgent)"
+        description = "Task priority (1-4, where 1 is highest)"
     )
     private Property<Integer> priority;
 
@@ -129,7 +129,6 @@ public class CreateTask extends AbstractTodoistTask implements RunnableTask<Crea
 
         return Output.builder()
             .taskId(result.get("id").toString())
-            .url(result.get("url").toString())
             .build();
     }
 
@@ -141,11 +140,5 @@ public class CreateTask extends AbstractTodoistTask implements RunnableTask<Crea
             description = "The ID of the created task"
         )
         private final String taskId;
-
-        @Schema(
-            title = "Task URL",
-            description = "The URL to view the task in Todoist"
-        )
-        private final String url;
     }
 }

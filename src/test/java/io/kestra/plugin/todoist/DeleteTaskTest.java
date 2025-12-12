@@ -35,7 +35,7 @@ class DeleteTaskTest {
 
         DeleteTask deleteTask = DeleteTask.builder()
             .apiToken(Property.ofValue(apiToken))
-            .taskId(Property.ofValue("9730643771"))
+            .taskId(Property.ofValue(taskId))
             .build();
 
         deleteTask.run(runContext);

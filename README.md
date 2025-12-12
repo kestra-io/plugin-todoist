@@ -13,16 +13,13 @@ Creates a new task in Todoist.
 - `apiToken` (required): Your Todoist API token
 - `content` (required): Task title/content
 - `taskDescription` (optional): Detailed description
-- `priority` (optional): Priority level (1-4, where 4 is urgent)
+- `priority` (optional): Task priority (1-4, where 1 is highest)
 - `projectId` (optional): ID of the project to add the task to
 - `dueString` (optional): Human-readable due date (e.g., "tomorrow", "next Monday")
 
 **Outputs:**
 
 - `taskId`: ID of the created task
-- `content`: Task content
-- `url`: URL to view the task
-- `response`: Full API response
 
 ### ListTasks
 
@@ -31,8 +28,9 @@ Retrieves a list of tasks from Todoist.
 **Parameters:**
 
 - `apiToken` (required): Your Todoist API token
-- `projectId` (optional): Filter by project ID
-- `filter` (optional): Custom filter (e.g., "today", "overdue", "priority 1")
+- `projectId` (optional): Filter by project ID - cannot be used together with filter parameter
+- `filter` (optional): Custom filter (e.g., "today", "overdue", "priority 1") - cannot be used together with projectId parameter
+- `limit` (optional): Maximum number of tasks to return per page. If not set, all tasks will be fetched by automatically paginating through all results. If set, only that many tasks will be returned (defaults to 50 per page). Both /api/v1/tasks and /api/v1/tasks/filter endpoints support this parameter
 
 **Outputs:**
 
