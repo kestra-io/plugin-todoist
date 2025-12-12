@@ -13,7 +13,7 @@ Creates a new task in Todoist.
 - `apiToken` (required): Your Todoist API token
 - `content` (required): Task title/content
 - `taskDescription` (optional): Detailed description
-- `priority` (optional): Priority level (1-4, where 4 is urgent)
+- `priority` (optional): Task priority (1-4, where 1 is highest)
 - `projectId` (optional): ID of the project to add the task to
 - `dueString` (optional): Human-readable due date (e.g., "tomorrow", "next Monday")
 
