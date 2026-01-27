@@ -31,7 +31,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Schema(
     title = "List tasks from Todoist",
-    description = "Retrieves a list of tasks from Todoist with optional project ID or filter query"
+    description = "Retrieves a list of tasks from Todoist by optional project ID or filter query"
 )
 @Plugin(
     examples = {
@@ -113,7 +113,7 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
 
     @Schema(
         title = "Project ID",
-        description = "Filter tasks by project ID. Cannot be used together with filter parameter."
+        description = "Filter tasks by project ID. Cannot be used together with a filter parameter."
     )
     private Property<String> projectId;
 
