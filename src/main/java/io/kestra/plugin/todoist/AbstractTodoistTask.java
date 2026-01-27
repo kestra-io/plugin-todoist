@@ -25,7 +25,7 @@ public abstract class AbstractTodoistTask extends Task {
 
     @Schema(
         title = "Todoist API token",
-        description = "Your Todoist API token for authentication. Get it from https://todoist.com/app/settings/integrations/developer"
+        description = "Your Todoist API token for authentication. Get it from the [Todoist Developer Docs](https://todoist.com/app/settings/integrations/developer)."
     )
     @NotNull
     protected Property<String> apiToken;
