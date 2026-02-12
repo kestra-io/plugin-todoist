@@ -1,8 +1,6 @@
 @PluginSubGroup(
     title = "Todoist",
-    description = "Interact with Todoist API to manage tasks and projects.",
-    categories = PluginSubGroup.PluginCategory.TOOL,
-    categories = {
+    description = "Interact with Todoist API to manage tasks and projects.",categories = {
         PluginSubGroup.PluginCategory.BUSINESS
     }
 )
