@@ -22,8 +22,8 @@ import java.util.Map;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Get a task from Todoist",
-    description = "Retrieves details of a specific task by ID"
+    title = "Fetch Todoist task by ID",
+    description = "Reads a Todoist task via `/tasks/{id}` and returns the full task object as a map."
 )
 @Plugin(
     examples = {
@@ -47,7 +47,7 @@ public class GetTask extends AbstractTodoistTask implements RunnableTask<GetTask
 
     @Schema(
         title = "Task ID",
-        description = "The ID of the task to retrieve"
+        description = "Todoist task ID to read"
     )
     @NotNull
     private Property<String> taskId;
@@ -84,7 +84,7 @@ public class GetTask extends AbstractTodoistTask implements RunnableTask<GetTask
     public static class Output implements io.kestra.core.models.tasks.Output {
         @Schema(
             title = "Task",
-            description = "The complete task object from Todoist"
+            description = "Complete task object returned by Todoist"
         )
         private final Map<String, Object> task;
     }

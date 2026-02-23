@@ -30,8 +30,8 @@ import java.util.Map;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "List tasks from Todoist",
-    description = "Retrieves a list of tasks from Todoist by optional project ID or filter query"
+    title = "List Todoist tasks",
+    description = "Lists active Todoist tasks by project or filter. Defaults to paginating all tasks and returning them in memory; set `fetchType` to STORE to stream to internal storage for large sets."
 )
 @Plugin(
     examples = {
@@ -106,6 +106,21 @@ import java.util.Map;
                     limit: 100
                     fetchType: FETCH
                 """
+        ),
+        @Example(
+            full = true,
+            title = "Fetch only the first matching task",
+            code = """
+                id: todoist_list_first_task
+                namespace: company.team
+
+                tasks:
+                  - id: list_first_task
+                    type: io.kestra.plugin.todoist.ListTasks
+                    apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
+                    filter: "today"
+                    fetchType: FETCH_ONE
+                """
         )
     }
 )
@@ -113,25 +128,25 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
 
     @Schema(
         title = "Project ID",
-        description = "Filter tasks by project ID. Cannot be used together with a filter parameter."
+        description = "Filter tasks by project ID; cannot be combined with filter"
     )
     private Property<String> projectId;
 
     @Schema(
         title = "Filter",
-        description = "Custom filter query (e.g., \"today\", \"overdue\", \"priority 1\"). Cannot be used together with projectId parameter."
+        description = "Custom Todoist query (e.g., \"today\", \"overdue\", \"priority 1\"); mutually exclusive with projectId"
     )
     private Property<String> filter;
 
     @Schema(
         title = "Limit",
-        description = "Maximum number of tasks to return per page. If not set, all tasks will be fetched by automatically paginating through all results. If set, only that many tasks will be returned (defaults to 50 per page). Both /api/v1/tasks and /api/v1/tasks/filter endpoints support this parameter."
+        description = "Maximum tasks per page. When null, the task auto-paginates all results; when set, only one page is fetched (Todoist defaults to 50). Supported on /tasks and /tasks/filter."
     )
     private Property<Integer> limit;
 
     @Schema(
         title = "Fetch Type",
-        description = "The way to fetch data: FETCH_ONE (first task only), FETCH (all tasks in memory), or STORE (store in internal storage for large datasets)"
+        description = "Output mode: FETCH_ONE (first task), FETCH (all in memory), STORE (write stream to internal storage `kestra://`); default FETCH"
     )
     @Builder.Default
     private Property<FetchType> fetchType = Property.ofValue(FetchType.FETCH);
@@ -318,13 +333,13 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
 
         @Schema(
             title = "Rows",
-            description = "List of tasks when fetchType is FETCH"
+            description = "Tasks list when fetchType is FETCH"
         )
         private final List<Map<String, Object>> rows;
 
         @Schema(
             title = "URI",
-            description = "URI of the stored file when fetchType is STORE"
+            description = "Internal storage URI (`kestra://`) when fetchType is STORE"
         )
         private final URI uri;
 

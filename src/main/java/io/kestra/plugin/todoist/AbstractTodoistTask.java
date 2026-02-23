@@ -24,8 +24,8 @@ import java.net.URI;
 public abstract class AbstractTodoistTask extends Task {
 
     @Schema(
-        title = "Todoist API token",
-        description = "Your Todoist API token for authentication. Get it from the [Todoist Developer Docs](https://todoist.com/app/settings/integrations/developer)."
+        title = "Provide Todoist API token",
+        description = "Personal API token sent as Bearer auth to Todoist API v1. Keep it in a Kestra Secret; required for all Todoist tasks."
     )
     @NotNull
     protected Property<String> apiToken;

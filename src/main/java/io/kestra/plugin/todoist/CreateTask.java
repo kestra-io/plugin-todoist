@@ -23,8 +23,8 @@ import java.util.Map;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Create a new task in Todoist",
-    description = "Creates a new task in Todoist with the specified content and optional parameters"
+    title = "Create Todoist task",
+    description = "Creates a Todoist task with required content plus optional description, priority, project, and natural-language due date. Uses Todoist API v1; fails on HTTP 4xx/5xx."
 )
 @Plugin(
     examples = {
@@ -55,7 +55,7 @@ import java.util.Map;
                     apiToken: "{{ secret('TODOIST_API_TOKEN') }}"
                     content: "Deploy to production"
                     taskDescription: "Deploy version 2.0 after testing"
-                    priority: 1
+                    priority: 4
                     dueString: "tomorrow"
                 """
         )
@@ -65,32 +65,32 @@ public class CreateTask extends AbstractTodoistTask implements RunnableTask<Crea
 
     @Schema(
         title = "Task content",
-        description = "The content/title of the task"
+        description = "Visible task title; required"
     )
     @NotNull
     private Property<String> content;
 
     @Schema(
         title = "Task description",
-        description = "A description for the task"
+        description = "Optional long description"
     )
     private Property<String> taskDescription;
 
     @Schema(
         title = "Priority",
-        description = "Task priority (1-4, where 1 is highest)"
+        description = "Priority 1 (highest) to 4 (lowest); defaults to Todoist standard when omitted"
     )
     private Property<Integer> priority;
 
     @Schema(
         title = "Project ID",
-        description = "The ID of the project to add the task to"
+        description = "Target project ID; leave null for Inbox"
     )
     private Property<String> projectId;
 
     @Schema(
         title = "Due string",
-        description = "Human-defined task due date (e.g., 'tomorrow', 'next Monday', '2025-12-31')"
+        description = "Natural-language due date parsed by Todoist (e.g., 'tomorrow', 'next Monday', '2025-12-31')"
     )
     private Property<String> dueString;
 
