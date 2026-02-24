@@ -20,8 +20,8 @@ import org.slf4j.Logger;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Complete a task in Todoist",
-    description = "Marks a task as completed in Todoist"
+    title = "Complete Todoist task",
+    description = "Marks a task complete via `/tasks/{id}/close`. The task remains available for reopening in Todoist."
 )
 @Plugin(
     examples = {
@@ -45,7 +45,7 @@ public class CompleteTask extends AbstractTodoistTask implements RunnableTask<Vo
     
     @Schema(
         title = "Task ID",
-        description = "The ID of the task to complete"
+        description = "Todoist task ID to close"
     )
     @NotNull
     private Property<String> taskId;

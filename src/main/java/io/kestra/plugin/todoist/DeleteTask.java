@@ -20,8 +20,8 @@ import org.slf4j.Logger;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Delete a task in Todoist",
-    description = "Permanently deletes a task from Todoist"
+    title = "Delete Todoist task",
+    description = "Deletes a Todoist task permanently via `/tasks/{id}` DELETE. Irreversible."
 )
 @Plugin(
     examples = {
@@ -45,7 +45,7 @@ public class DeleteTask extends AbstractTodoistTask implements RunnableTask<Void
 
     @Schema(
         title = "Task ID",
-        description = "The ID of the task to delete"
+        description = "Todoist task ID to delete"
     )
     @NotNull
     private Property<String> taskId;

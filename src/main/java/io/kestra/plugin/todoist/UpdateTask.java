@@ -23,8 +23,8 @@ import java.util.Map;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Update an existing task in Todoist",
-    description = "Updates an existing task in Todoist with new values"
+    title = "Update Todoist task fields",
+    description = "Updates a Todoist task via `/tasks/{id}` with new content, description, priority, or due string. At least one field is required or the task fails."
 )
 @Plugin(
     examples = {
@@ -65,32 +65,32 @@ public class UpdateTask extends AbstractTodoistTask implements RunnableTask<Upda
     
     @Schema(
         title = "Task ID",
-        description = "The ID of the task to update"
+        description = "Todoist task ID to update"
     )
     @NotNull
     private Property<String> taskId;
     
     @Schema(
         title = "Task content",
-        description = "The new content/title of the task"
+        description = "New task title"
     )
     private Property<String> content;
     
     @Schema(
         title = "Task description",
-        description = "The new description for the task"
+        description = "New description"
     )
     private Property<String> taskDescription;
     
     @Schema(
         title = "Priority",
-        description = "Task priority from 1 (normal) to 4 (urgent)"
+        description = "Priority 1 (highest) to 4 (lowest)"
     )
     private Property<Integer> priority;
     
     @Schema(
         title = "Due string",
-        description = "Human-defined task due date (e.g., 'tomorrow', 'next Monday', '2025-12-31')"
+        description = "Natural-language due date (e.g., 'tomorrow', 'next Monday', '2025-12-31')"
     )
     private Property<String> dueString;
 
