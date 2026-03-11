@@ -1,5 +1,14 @@
 package io.kestra.plugin.todoist;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+
 import io.kestra.core.http.HttpRequest;
 import io.kestra.core.http.HttpResponse;
 import io.kestra.core.models.annotations.Example;
@@ -10,19 +19,10 @@ import io.kestra.core.models.tasks.common.FetchType;
 import io.kestra.core.runners.RunContext;
 import io.kestra.core.serializers.FileSerde;
 import io.kestra.core.serializers.JacksonMapper;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.slf4j.Logger;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
 
 @SuperBuilder
 @ToString
@@ -170,10 +170,10 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
         List<Map<String, Object>> allTasks = new java.util.ArrayList<>();
         String cursor = null;
         boolean fetchAll = (rLimit == null); // If limit is not set, fetch all pages
-        
+
         do {
             String url = buildUrl(rFilter, rProjectId, rLimit, cursor);
-            
+
             HttpRequest request = createRequestBuilder(rToken, url)
                 .method("GET")
                 .build();
@@ -197,7 +197,7 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
             // Extract tasks from response
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> pageTasks = extractTasksFromResponse(responseMap, responseBody, logger);
-            
+
             if (pageTasks != null) {
                 allTasks.addAll(pageTasks);
             }
@@ -205,17 +205,17 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
             // Get next cursor for pagination
             Object nextCursorObj = responseMap.get("next_cursor");
             cursor = (nextCursorObj != null && !nextCursorObj.toString().isEmpty()) ? nextCursorObj.toString() : null;
-            
+
             // If limit is set, only fetch one page
             if (!fetchAll) {
                 break;
             }
-            
+
             // Log progress if fetching all pages
             if (cursor != null) {
                 logger.debug("Fetched {} tasks so far, continuing pagination...", allTasks.size());
             }
-            
+
         } while (cursor != null);
 
         logger.info("Retrieved {} tasks{}", allTasks.size(), fetchAll ? " (all pages)" : "");
@@ -254,7 +254,7 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
      */
     private String buildUrl(String filter, String projectId, Integer limit, String cursor) {
         StringBuilder urlBuilder;
-        
+
         if (filter != null) {
             // Use the filter endpoint: /api/v1/tasks/filter
             // API v1 uses 'query' parameter, not 'filter'
@@ -281,7 +281,7 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
                 urlBuilder.append(hasParams ? "&" : "?").append("cursor=").append(URLEncoder.encode(cursor, StandardCharsets.UTF_8));
             }
         }
-        
+
         return urlBuilder.toString();
     }
 
@@ -291,7 +291,7 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
     @SuppressWarnings("unchecked")
     private List<Map<String, Object>> extractTasksFromResponse(Map<String, Object> responseMap, String responseBody, Logger logger) throws Exception {
         List<Map<String, Object>> tasks;
-        
+
         try {
             if (responseMap.containsKey("results") && responseMap.get("results") instanceof List) {
                 // Paginated response with 'results' array (API v1 standard)
@@ -318,7 +318,7 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
             logger.error("Unexpected error parsing response: {}", responseBody, e);
             throw new Exception("Failed to parse tasks response: " + e.getMessage() + ". Response: " + responseBody, e);
         }
-        
+
         return tasks != null ? tasks : new java.util.ArrayList<>();
     }
 

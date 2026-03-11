@@ -1,15 +1,17 @@
 package io.kestra.plugin.todoist;
 
-import io.kestra.core.models.property.Property;
-import io.kestra.core.runners.RunContext;
-import io.kestra.core.runners.RunContextFactory;
-import io.kestra.core.junit.annotations.KestraTest;
-import jakarta.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.kestra.core.junit.annotations.KestraTest;
+import io.kestra.core.models.property.Property;
+import io.kestra.core.runners.RunContext;
+import io.kestra.core.runners.RunContextFactory;
+
+import jakarta.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -50,7 +52,7 @@ class ListTasksTest {
             // We may not see all tasks if they span multiple pages
             // So we check that we got at least the initial count, and verify our created tasks are present
             assertThat(output.getSize().intValue(), greaterThanOrEqualTo(initialCount));
-            
+
             // Verify that at least one of our created tasks is in the results
             boolean foundCreatedTask = output.getRows().stream()
                 .anyMatch(task -> createdTaskIds.contains(task.get("id").toString()));
