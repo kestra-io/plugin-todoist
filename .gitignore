@@ -13,6 +13,6 @@ out/
 .settings
 .classpath
 .attach*
-src/test/resources/application-test.yml.factorypath
+src/test/resources/application-test.yml
 bin/
 .factorypath
