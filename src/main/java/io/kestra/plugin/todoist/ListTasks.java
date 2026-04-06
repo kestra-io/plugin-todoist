@@ -23,6 +23,7 @@ import io.kestra.core.serializers.JacksonMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import io.kestra.core.models.annotations.PluginProperty;
 
 @SuperBuilder
 @ToString
@@ -130,18 +131,21 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
         title = "Project ID",
         description = "Filter tasks by project ID; cannot be combined with filter"
     )
+    @PluginProperty(group = "connection")
     private Property<String> projectId;
 
     @Schema(
         title = "Filter",
         description = "Custom Todoist query (e.g., \"today\", \"overdue\", \"priority 1\"); mutually exclusive with projectId"
     )
+    @PluginProperty(group = "processing")
     private Property<String> filter;
 
     @Schema(
         title = "Limit",
         description = "Maximum tasks per page. When null, the task auto-paginates all results; when set, only one page is fetched (Todoist defaults to 50). Supported on /tasks and /tasks/filter."
     )
+    @PluginProperty(group = "processing")
     private Property<Integer> limit;
 
     @Schema(
@@ -149,6 +153,7 @@ public class ListTasks extends AbstractTodoistTask implements RunnableTask<ListT
         description = "Output mode: FETCH_ONE (first task), FETCH (all in memory), STORE (write stream to internal storage `kestra://`); default FETCH"
     )
     @Builder.Default
+    @PluginProperty(group = "processing")
     private Property<FetchType> fetchType = Property.ofValue(FetchType.FETCH);
 
     @Override

@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import io.kestra.core.models.annotations.PluginProperty;
 
 @SuperBuilder
 @ToString
@@ -29,6 +30,7 @@ public abstract class AbstractTodoistTask extends Task {
         description = "Personal API token sent as Bearer auth to Todoist API v1. Keep it in a Kestra Secret; required for all Todoist tasks."
     )
     @NotNull
+    @PluginProperty(group = "main")
     protected Property<String> apiToken;
 
     protected static final String BASE_URL = "https://api.todoist.com/api/v1";

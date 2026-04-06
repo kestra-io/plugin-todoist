@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import io.kestra.core.models.annotations.PluginProperty;
 
 @SuperBuilder
 @ToString
@@ -52,6 +53,7 @@ public class GetTask extends AbstractTodoistTask implements RunnableTask<GetTask
         description = "Todoist task ID to read"
     )
     @NotNull
+    @PluginProperty(group = "main")
     private Property<String> taskId;
 
     @Override

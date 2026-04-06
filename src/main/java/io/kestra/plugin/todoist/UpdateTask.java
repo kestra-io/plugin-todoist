@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import io.kestra.core.models.annotations.PluginProperty;
 
 @SuperBuilder
 @ToString
@@ -70,30 +71,35 @@ public class UpdateTask extends AbstractTodoistTask implements RunnableTask<Upda
         description = "Todoist task ID to update"
     )
     @NotNull
+    @PluginProperty(group = "main")
     private Property<String> taskId;
 
     @Schema(
         title = "Task content",
         description = "New task title"
     )
+    @PluginProperty(group = "advanced")
     private Property<String> content;
 
     @Schema(
         title = "Task description",
         description = "New description"
     )
+    @PluginProperty(group = "advanced")
     private Property<String> taskDescription;
 
     @Schema(
         title = "Priority",
         description = "Priority 1 (highest) to 4 (lowest)"
     )
+    @PluginProperty(group = "advanced")
     private Property<Integer> priority;
 
     @Schema(
         title = "Due string",
         description = "Natural-language due date (e.g., 'tomorrow', 'next Monday', '2025-12-31')"
     )
+    @PluginProperty(group = "advanced")
     private Property<String> dueString;
 
     @Override
