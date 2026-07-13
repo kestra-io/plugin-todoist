@@ -30,6 +30,7 @@ public abstract class AbstractTodoistTask extends Task {
         description = "Personal API token sent as Bearer auth to Todoist API v1. Keep it in a Kestra Secret; required for all Todoist tasks."
     )
     @NotNull
+    @ToString.Exclude
     @PluginProperty(secret = true, group = "main")
     protected Property<String> apiToken;
 
