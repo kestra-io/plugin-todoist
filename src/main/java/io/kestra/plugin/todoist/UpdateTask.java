@@ -90,7 +90,7 @@ public class UpdateTask extends AbstractTodoistTask implements RunnableTask<Upda
 
     @Schema(
         title = "Priority",
-        description = "Priority 1 (highest) to 4 (lowest)"
+        description = "Priority 1 (normal/lowest) to 4 (urgent/highest)"
     )
     @PluginProperty(group = "advanced")
     private Property<Integer> priority;

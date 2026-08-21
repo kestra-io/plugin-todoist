@@ -83,7 +83,7 @@ public class CreateTask extends AbstractTodoistTask implements RunnableTask<Crea
 
     @Schema(
         title = "Priority",
-        description = "Priority 1 (highest) to 4 (lowest); defaults to Todoist standard when omitted"
+        description = "Priority 1 (normal/lowest) to 4 (urgent/highest); defaults to Todoist standard when omitted"
     )
     @PluginProperty(group = "advanced")
     private Property<Integer> priority;
